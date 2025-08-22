@@ -1,9 +1,11 @@
 import utils
+import numpy as np
 import math
+import argparse
 import ast
-import cairosvg
 import os
 from dotenv import load_dotenv
+from svg_converter import svg2png
 import google.generativeai as genai
 from prompts import sketch_first_prompt, system_prompt, gt_example
 import json
@@ -116,7 +118,7 @@ class SketchApp:
         self.all_strokes_svg += "</svg>"
         with open(f"{self.path2save}/final_sketch.svg", "w") as svg_file:
             svg_file.write(self.all_strokes_svg)
-        cairosvg.svg2png(url=f"{self.path2save}/final_sketch.svg", write_to=f"{self.path2save}/final_sketch.png", background_color="white")
+        svg2png(url=f"{self.path2save}/final_sketch.svg", write_to=f"{self.path2save}/final_sketch.png", background_color="white")
         print(f"results saved to [{self.path2save}/final_sketch.svg]")
         # Load the existing JSON data
         with open(f"{self.path2save}/data_history.json", "r") as f:
@@ -189,7 +191,7 @@ class SketchApp:
                 svg_file.write(cur_svg_to_render)
 
             # 2. Convert the SVG file to PNG (or another image format) using CairoSVG
-            cairosvg.svg2png(url=f"{self.path2save}/sketch.svg", write_to=f"static/cur_canvas_user.png", background_color="white")
+            svg2png(url=f"{self.path2save}/sketch.svg", write_to=f"static/cur_canvas_user.png", background_color="white")
             
             self.update_history(user_stroke)
             if self.sketch_mode == "solo":
@@ -210,9 +212,9 @@ class SketchApp:
             self.cur_svg_to_render = f"{self.all_strokes_svg}</svg>"
             with open(f"{self.path2save}/sketch.svg", "w") as svg_file:
                 svg_file.write(self.cur_svg_to_render)
-            cairosvg.svg2png(url=f"{self.path2save}/sketch.svg", write_to=f"static/cur_canvas_agent.png", background_color="white")
+            svg2png(url=f"{self.path2save}/sketch.svg", write_to=f"static/cur_canvas_agent.png", background_color="white")
             if not self.user_always_first:
-                cairosvg.svg2png(url=f"{self.path2save}/sketch.svg", write_to=f"static/init_canvas.png", background_color="white")
+                svg2png(url=f"{self.path2save}/sketch.svg", write_to=f"static/init_canvas.png", background_color="white")
             return jsonify({"status": "success", "SVG": self.cur_svg_to_render})
         
         except Exception as e:
@@ -402,7 +404,7 @@ class SketchApp:
                 svg_file.write(sketch_text_svg)
 
             # 2. Convert the SVG file to PNG (or another image format) using CairoSVG
-            cairosvg.svg2png(url=f"{self.path2save}/sketch.svg", write_to=f"static/entire_sketch.png", background_color="white")
+            svg2png(url=f"{self.path2save}/sketch.svg", write_to=f"static/entire_sketch.png", background_color="white")
 
         return jsonify({"status": "success", "message": "Sketch drawn!"})
 

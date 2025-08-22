@@ -1,11 +1,11 @@
 import argparse
 import google.generativeai as genai
 import ast
-import cairosvg
 import json
 import os
 import utils
 import traceback
+from svg_converter import svg2png
 
 from dotenv import load_dotenv
 from PIL import Image
@@ -196,12 +196,12 @@ class SketchApp:
 
             # Convert to PNG with blank background
             png_path = f"{self.path2save}/{self.target_concept}.png"
-            cairosvg.svg2png(url=svg_path, write_to=png_path, background_color="white")
+            svg2png(url=svg_path, write_to=png_path, background_color="white")
             print(f"PNG saved to: {png_path}")
             
             # Save the sketch to PNG on the canvas
             output_png_path = f"{self.path2save}/{self.target_concept}_canvas.png"
-            cairosvg.svg2png(url=svg_path, write_to=output_png_path)
+            svg2png(url=svg_path, write_to=output_png_path)
             foreground = Image.open(output_png_path)
             self.init_canvas.paste(Image.open(output_png_path), (0, 0), foreground) 
             self.init_canvas.save(output_png_path)
