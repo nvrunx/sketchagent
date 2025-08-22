@@ -7,13 +7,13 @@ import traceback
 from datetime import datetime
 import uuid
 import ast
-import cairosvg
 from xml.dom import minidom
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from PIL import Image
 import google.generativeai as genai
 from dotenv import load_dotenv
+from svg_converter import svg2png
 
 import utils
 from prompts import sketch_first_prompt, system_prompt, gt_example
@@ -198,12 +198,12 @@ class SketchApp:
 
             # Convert to PNG with blank background
             png_path = f"{self.path2save}/{self.save_name}.png"
-            cairosvg.svg2png(url=svg_path, write_to=png_path, background_color="white")
+            svg2png(url=svg_path, write_to=png_path, background_color="white")
             print(f"PNG saved to: {png_path}")
             
             # Save with canvas background
             canvas_png_path = f"{self.path2save}/{self.save_name}_canvas.png"
-            cairosvg.svg2png(url=svg_path, write_to=canvas_png_path)
+            svg2png(url=svg_path, write_to=canvas_png_path)
             foreground = Image.open(canvas_png_path)
             self.init_canvas.paste(Image.open(canvas_png_path), (0, 0), foreground)
             self.init_canvas.save(canvas_png_path)
@@ -489,9 +489,9 @@ def save_sketch(model_strokes_svg, output_path, add_object, init_canvas):
         svg_file.write(model_strokes_svg)
 
     # Save the result with clean white background (no grid)
-    cairosvg.svg2png(url=f"{output_path}/output_{add_object}.svg",
-                     write_to=f"{output_path}/output_{add_object}.png",
-                     background_color="white")
+    svg2png(url=f"{output_path}/output_{add_object}.svg",
+            write_to=f"{output_path}/output_{add_object}.png",
+            background_color="white")
 
     if init_canvas is not None:
         # For the canvas version, create a blank white canvas instead of using the grid
@@ -501,7 +501,7 @@ def save_sketch(model_strokes_svg, output_path, add_object, init_canvas):
         blank_canvas = Image.new('RGB', init_canvas.size, 'white')
 
         # Convert SVG to PNG and overlay on blank canvas
-        cairosvg.svg2png(url=f"{output_path}/output_{add_object}.svg", write_to=output_png_path)
+        svg2png(url=f"{output_path}/output_{add_object}.svg", write_to=output_png_path)
         foreground = Image.open(output_png_path)
         blank_canvas.paste(foreground, (0, 0), foreground)
         blank_canvas.save(output_png_path)

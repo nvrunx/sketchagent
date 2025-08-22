@@ -222,6 +222,93 @@
             border: 2px solid #3498db;
             border-radius: 10px;
         }
+
+        /* Mobile responsive styles */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                height: 100vh;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 40vh;
+                order: 2;
+                border-right: none;
+                border-top: 1px solid #ddd;
+            }
+            
+            .main-content {
+                order: 1;
+                height: 60vh;
+            }
+            
+            .concept-input {
+                flex-direction: column;
+                padding: 15px;
+            }
+            
+            .concept-input input {
+                margin-bottom: 10px;
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+            
+            .header h1 {
+                font-size: 1.5em;
+            }
+            
+            .sketch-display {
+                margin: 10px;
+                padding: 10px;
+            }
+            
+            .chat-messages {
+                padding: 10px;
+            }
+            
+            .message {
+                max-width: 90%;
+                font-size: 14px;
+            }
+            
+            .chat-input {
+                padding: 15px;
+            }
+            
+            .chat-input input {
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.2em;
+            }
+            
+            .concept-input {
+                padding: 10px;
+            }
+            
+            .sketch-display {
+                margin: 5px;
+                padding: 5px;
+            }
+            
+            .message {
+                max-width: 95%;
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+            
+            .chat-input {
+                padding: 10px;
+            }
+        }
     </style>
 </head>
 <body>

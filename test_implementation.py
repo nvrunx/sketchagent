@@ -40,10 +40,10 @@ def test_imports():
         return False
         
     try:
-        import cairosvg
-        print("  ✅ CairoSVG imported successfully")
+        from svg_converter import svg2png
+        print("  ✅ SVG converter imported successfully")
     except ImportError as e:
-        print(f"  ❌ Failed to import CairoSVG: {e}")
+        print(f"  ❌ Failed to import SVG converter: {e}")
         return False
         
     try:
