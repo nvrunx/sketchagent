@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SketchAgent Gallery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            color: #5a67d8;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo span {
+            font-size: 2rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            background: white;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+            width: 250px;
+        }
+
+        .search-box:focus {
+            border-color: #5a67d8;
+            box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.1);
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            background: white;
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .refresh-btn {
+            background: #5a67d8;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .refresh-btn:hover {
+            background: #4c51bf;
+            transform: translateY(-1px);
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .stats {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-item h3 {
+            color: #5a67d8;
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .stat-item p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .sketch-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .sketch-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+        }
+
+        .sketch-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: #f8f9fa;
+        }
+
+        .sketch-info {
+            padding: 20px;
+        }
+
+        .sketch-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sketch-meta {
+            font-size: 0.85rem;
+            color: #718096;
+            margin-bottom: 15px;
+        }
+
+        .sketch-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .action-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .download-btn {
+            background: #48bb78;
+            color: white;
+        }
+
+        .download-btn:hover {
+            background: #38a169;
+        }
+
+        .svg-btn {
+            background: #ed8936;
+            color: white;
+        }
+
+        .svg-btn:hover {
+            background: #dd6b20;
+        }
+
+        .delete-btn {
+            background: #f56565;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #e53e3e;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            color: #666;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #4a5568;
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+            margin-bottom: 25px;
+        }
+
+        .empty-state .action-links {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .empty-state .action-links a {
+            background: #5a67d8;
+            color: white;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .empty-state .action-links a:hover {
+            background: #4c51bf;
+            transform: translateY(-1px);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge.svg {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .badge.png {
+            background: #c6f6d5;
+            color: #2f855a;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal h2 {
+            color: #2d3748;
+            margin: 0;
+        }
+
+        .close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                text-align: center;
+            }
+            
+            .controls {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .search-box {
+                width: 200px;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span>🎨</span>
+                <h1>SketchAgent Gallery</h1>
+            </div>
+            <div class="controls">
+                <input type="text" id="searchBox" class="search-box" placeholder="Search sketches...">
+                <select id="sortFilter" class="filter-select">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="concept">By Concept</option>
+                </select>
+                <button id="refreshBtn" class="refresh-btn">
+                    <span>↻</span> Refresh
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="stats">
+            <div class="stat-item">
+                <h3 id="totalSketches">0</h3>
+                <p>Total Sketches</p>
+            </div>
+            <div class="stat-item">
+                <h3 id="totalConcepts">0</h3>
+                <p>Unique Concepts</p>
+            </div>
+            <div class="stat-item">
+                <h3 id="todaySketches">0</h3>
+                <p>Created Today</p>
+            </div>
+        </div>
+
+        <div id="loadingState" class="loading">
+            Loading your sketches...
+        </div>
+
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <h3>No sketches found</h3>
+            <p>Start creating some amazing sketches to see them here!</p>
+            <div class="action-links">
+                <a href="javascript:void(0)" onclick="window.location.href='/'">Generate Sketch</a>
+                <a href="javascript:void(0)" onclick="window.location.href='/collab'">Collaborative Drawing</a>
+                <a href="javascript:void(0)" onclick="window.location.href='/chat'">Chat & Edit</a>
+            </div>
+        </div>
+
+        <div id="galleryGrid" class="gallery-grid"></div>
+    </main>
+
+    <!-- Sketch Detail Modal -->
+    <div id="sketchModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Sketch Details</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div id="modalBody">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class SketchGallery {
+            constructor() {
+                this.sketches = [];
+                this.filteredSketches = [];
+                this.init();
+            }
+
+            async init() {
+                this.bindEvents();
+                await this.loadSketches();
+                this.renderSketches();
+            }
+
+            bindEvents() {
+                document.getElementById('refreshBtn').addEventListener('click', () => this.refresh());
+                document.getElementById('searchBox').addEventListener('input', (e) => this.search(e.target.value));
+                document.getElementById('sortFilter').addEventListener('change', (e) => this.sort(e.target.value));
+                
+                // Modal events
+                const modal = document.getElementById('sketchModal');
+                const closeBtn = document.querySelector('.close');
+                closeBtn.addEventListener('click', () => modal.style.display = 'none');
+                window.addEventListener('click', (e) => {
+                    if (e.target === modal) modal.style.display = 'none';
+                });
+            }
+
+            async loadSketches() {
+                try {
+                    const response = await fetch('/api/sketches');
+                    this.sketches = await response.json();
+                    this.filteredSketches = [...this.sketches];
+                    this.updateStats();
+                } catch (error) {
+                    console.error('Error loading sketches:', error);
+                    this.showError('Failed to load sketches');
+                }
+            }
+
+            updateStats() {
+                const totalSketches = this.sketches.length;
+                const uniqueConcepts = new Set(this.sketches.map(s => s.concept)).size;
+                const today = new Date().toDateString();
+                const todaySketches = this.sketches.filter(s => 
+                    new Date(s.created).toDateString() === today
+                ).length;
+
+                document.getElementById('totalSketches').textContent = totalSketches;
+                document.getElementById('totalConcepts').textContent = uniqueConcepts;
+                document.getElementById('todaySketches').textContent = todaySketches;
+            }
+
+            renderSketches() {
+                const loadingState = document.getElementById('loadingState');
+                const emptyState = document.getElementById('emptyState');
+                const galleryGrid = document.getElementById('galleryGrid');
+
+                loadingState.style.display = 'none';
+
+                if (this.filteredSketches.length === 0) {
+                    emptyState.style.display = 'block';
+                    galleryGrid.style.display = 'none';
+                    return;
+                }
+
+                emptyState.style.display = 'none';
+                galleryGrid.style.display = 'grid';
+
+                galleryGrid.innerHTML = this.filteredSketches.map(sketch => `
+                    <div class="sketch-card" onclick="gallery.showSketchDetails('${sketch.id}')">
+                        <img src="${sketch.url}" alt="${sketch.concept}" class="sketch-image" 
+                             onerror="this.src='data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="200" height="200" fill="#f0f0f0"/><text x="100" y="100" text-anchor="middle" fill="#999">No Image</text></svg>')}'">
+                        <div class="sketch-info">
+                            <div class="sketch-title">
+                                ${sketch.concept}
+                                <div>
+                                    <span class="badge png">PNG</span>
+                                    ${sketch.has_svg ? '<span class="badge svg">SVG</span>' : ''}
+                                </div>
+                            </div>
+                            <div class="sketch-meta">
+                                Created: ${sketch.created}<br>
+                                Size: ${sketch.width} × ${sketch.height}px
+                            </div>
+                            <div class="sketch-actions">
+                                <a href="${sketch.url}" download="${sketch.filename}" class="action-btn download-btn" onclick="event.stopPropagation()">
+                                    ⬇ PNG
+                                </a>
+                                ${sketch.has_svg ? 
+                                    `<a href="${sketch.svg_url}" download="${sketch.filename.replace('.png', '.svg')}" class="action-btn svg-btn" onclick="event.stopPropagation()">⬇ SVG</a>` : 
+                                    ''
+                                }
+                                <button class="action-btn delete-btn" onclick="event.stopPropagation(); gallery.deleteSketch('${sketch.id}')">
+                                    🗑 Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            search(query) {
+                const searchTerm = query.toLowerCase().trim();
+                this.filteredSketches = this.sketches.filter(sketch => 
+                    sketch.concept.toLowerCase().includes(searchTerm) ||
+                    sketch.filename.toLowerCase().includes(searchTerm)
+                );
+                this.renderSketches();
+            }
+
+            sort(sortBy) {
+                switch(sortBy) {
+                    case 'newest':
+                        this.filteredSketches.sort((a, b) => b.timestamp - a.timestamp);
+                        break;
+                    case 'oldest':
+                        this.filteredSketches.sort((a, b) => a.timestamp - b.timestamp);
+                        break;
+                    case 'concept':
+                        this.filteredSketches.sort((a, b) => a.concept.localeCompare(b.concept));
+                        break;
+                }
+                this.renderSketches();
+            }
+
+            async refresh() {
+                document.getElementById('loadingState').style.display = 'block';
+                document.getElementById('galleryGrid').style.display = 'none';
+                await this.loadSketches();
+                this.renderSketches();
+            }
+
+            async showSketchDetails(sketchId) {
+                const modal = document.getElementById('sketchModal');
+                const modalTitle = document.getElementById('modalTitle');
+                const modalBody = document.getElementById('modalBody');
+
+                try {
+                    const response = await fetch(`/api/sketch/${sketchId}`);
+                    const sketch = await response.json();
+
+                    modalTitle.textContent = `${sketch.concept} - Details`;
+                    modalBody.innerHTML = `
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <img src="${sketch.url}" alt="${sketch.concept}" style="max-width: 100%; max-height: 400px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                        </div>
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                            <h4 style="margin-bottom: 15px; color: #2d3748;">Sketch Information</h4>
+                            <p><strong>Concept:</strong> ${sketch.concept}</p>
+                            <p><strong>Created:</strong> ${sketch.created}</p>
+                            <p><strong>Dimensions:</strong> ${sketch.width} × ${sketch.height} pixels</p>
+                            <p><strong>File:</strong> ${sketch.filename}</p>
+                        </div>
+                        ${sketch.conversation ? `
+                            <div style="background: #e6fffa; padding: 20px; border-radius: 10px;">
+                                <h4 style="margin-bottom: 15px; color: #2d3748;">Generation Log</h4>
+                                <div style="max-height: 200px; overflow-y: auto;">
+                                    ${sketch.conversation.map(msg => `
+                                        <div style="margin-bottom: 15px;">
+                                            <strong>${msg.role}:</strong>
+                                            <div style="background: white; padding: 10px; border-radius: 5px; margin-top: 5px; font-size: 0.9rem;">
+                                                ${msg.content.length > 200 ? msg.content.substring(0, 200) + '...' : msg.content}
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    `;
+
+                    modal.style.display = 'block';
+                } catch (error) {
+                    console.error('Error loading sketch details:', error);
+                    this.showError('Failed to load sketch details');
+                }
+            }
+
+            async deleteSketch(sketchId) {
+                if (!confirm('Are you sure you want to delete this sketch? This action cannot be undone.')) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/sketch/${sketchId}/delete`, { method: 'POST' });
+                    const result = await response.json();
+
+                    if (result.success) {
+                        await this.refresh();
+                        this.showSuccess('Sketch deleted successfully');
+                    } else {
+                        this.showError('Failed to delete sketch');
+                    }
+                } catch (error) {
+                    console.error('Error deleting sketch:', error);
+                    this.showError('Failed to delete sketch');
+                }
+            }
+
+            showError(message) {
+                // Simple error notification - could be enhanced with a proper notification system
+                alert(`Error: ${message}`);
+            }
+
+            showSuccess(message) {
+                // Simple success notification - could be enhanced with a proper notification system
+                alert(message);
+            }
+        }
+
+        // Initialize gallery when page loads
+        let gallery;
+        window.addEventListener('DOMContentLoaded', () => {
+            gallery = new SketchGallery();
+        });
+    </script>
+</body>
+</html>
